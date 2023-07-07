@@ -1,4 +1,5 @@
 from csv import DictReader
+import csv
 from typing import Dict
 
 from src.models.dish import Recipe
@@ -25,10 +26,33 @@ class InventoryMapping:
     def __init__(self, inventory_file_path=BASE_INVENTORY) -> None:
         self.inventory = read_csv_inventory(inventory_file_path)
 
+    def load_inventory(self, inventory_path):
+        inventory = {}
+        with open(inventory_path, "r") as file:
+            reader = csv.reader(file)
+            for row in reader:
+                ingredient, quantity = row[0], int(row[1])
+                inventory[ingredient] = quantity
+        return inventory
+
+        # Atualizar o arquivo CSV com o novo estoque (opcional)
+
+        return None
+
     # Req 5.1
     def check_recipe_availability(self, recipe: Recipe):
-        pass
+        for ingredient, quantity in recipe.items():
+            if (
+                ingredient not in self.inventory
+                or quantity > self.inventory[ingredient]
+              ):
+                return False
+        return True
 
     # Req 5.2
+
     def consume_recipe(self, recipe: Recipe) -> None:
-        pass
+        if not self.check_recipe_availability(recipe):
+            raise ValueError("Recipe not available")
+        for ingredient, quantity in recipe.items():
+            self.inventory[ingredient] -= quantity

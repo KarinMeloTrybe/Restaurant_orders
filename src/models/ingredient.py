@@ -1,5 +1,4 @@
 from enum import Enum
-"""Hello word"""
 
 
 class Restriction(Enum):
